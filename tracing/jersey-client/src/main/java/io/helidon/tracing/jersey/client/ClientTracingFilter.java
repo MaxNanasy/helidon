@@ -180,8 +180,10 @@ public class ClientTracingFilter implements ClientRequestFilter, ClientResponseF
             return;
         }
 
-        Optional<SpanContext> parentSpan = findParentSpan(requestContext, tracingContext);
         Tracer tracer = findTracer(requestContext, tracingContext);
+        Optional<SpanContext> parentSpan = tracer.activeSpan() == null
+            ? findParentSpan(requestContext, tracingContext)
+            : Optional.empty();
         Map<String, List<String>> inboundHeaders = findInboundHeaders(tracingContext);
         String spanName = findSpanName(requestContext, spanConfig);
 
